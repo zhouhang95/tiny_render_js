@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>tiny_render_js</title>
+    <style>
+        canvas {
+            border: 1px black solid;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="id-canvas" width="400" height="300"></canvas>
+<script>
+    var log = console.log.bind(console)
+    var canvas = document.querySelector('#id-canvas')
+    var ctx = canvas.getContext('2d')
+
+    var drawPoint = function(p) {
+        ctx.fillRect(p[0], p[1], 1, 1)
+    }
+
+    var drawLine = function(p0, p1, color) {
+        var p0 = p0.slice()
+        var p1 = p1.slice()
+
+        var swap = function(p0, p1) {
+            var t = p0[0]
+            p0[0] = p1[0]
+            p1[0] = t
+            t = p0[1]
+            p0[1] = p1[1]
+            p1[1] = t
+        }
+
+        ctx.fillStyle = color
+        var steep = false
+        if (Math.abs(p0[0] - p1[0]) < Math.abs(p0[1] - p1[1])) {
+            steep = true
+        }
+        if (steep) {
+            if (p0[1] > p1[1]) {
+                swap(p0, p1)
+            }
+            for (var y = p0[1]; y < p1[1]; y += 1) {
+                var i = (y - p0[1]) / (p1[1] - p0[1])
+                x = p0[0] + (p1[0] - p0[0]) * i
+                drawPoint([x, y])
+            }
+        } else {
+            if (p0[0] > p1[0]) {
+                swap(p0, p1)
+            }
+            for (var x = p0[0]; x < p1[0]; x += 1) {
+                var i = (x - p0[0]) / (p1[0] - p0[0])
+                y = p0[1] + (p1[1] - p0[1]) * i
+                drawPoint([x, y])
+            }
+        }
+    }
+
+    var model = {}
+    model.pos = [
+        [50, 50],
+        [50, 250],
+        [150, 50],
+    ]
+    model.face = [
+        [0, 1, 2],
+    ]
+    model.drawLine = function() {
+        for (var f = 0; f < model.face.length; f++) {
+            var p0 =  model.pos[model.face[f][0]]
+            var p1 =  model.pos[model.face[f][1]]
+            var p2 =  model.pos[model.face[f][2]]
+            drawLine(p0, p1, 'red')
+            drawLine(p1, p2, 'green')
+            drawLine(p2, p0, 'blue')
+        }
+    }
+
+    model.drawLine()
+
+</script>
+</body>
+</html>
