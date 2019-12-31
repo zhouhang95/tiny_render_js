@@ -70,7 +70,7 @@
     model.face = [
         [0, 1, 2],
     ]
-    model.drawLine = function() {
+    model.drawWireframe = function() {
         for (var f = 0; f < model.face.length; f++) {
             var p0 =  model.pos[model.face[f][0]]
             var p1 =  model.pos[model.face[f][1]]
@@ -81,7 +81,66 @@
         }
     }
 
-    model.drawLine()
+    model.drawWireframe()
+
+    var cross = function(a, b) {
+        var out = []
+        out[0] = a[1] * b[2] - a[2] * b[1]
+        out[1] = a[2] * b[0] - a[0] * b[2]
+        out[2] = a[0] * b[1] - a[1] * b[0]
+        return out
+    }
+
+    var barycentric = function(a, b, c, p) {
+        ab = [b[0] - a[0], b[1] - a[1]]
+        ac = [c[0] - a[0], c[1] - a[1]]
+        pa = [a[0] - p[0], a[1] - p[1]]
+
+        x = [ab[0], ac[0], pa[0]]
+        y = [ab[1], ac[1], pa[1]]
+
+        u = cross(x, y)
+        if (Math.abs([2]) < 1) {
+            return [-1, 1, 1]
+        } else {
+            var out = [1 - (u[0] + u[1]) / u[2], u[0] / u[2], u[1] / u[2]]
+            return out
+        }
+    } 
+
+    var anyNegative  = function(v) {
+        return v[0] < 0 || v[1] < 0 || v[2] < 0
+    }
+
+
+    model.drawTriangle = function() {
+        for (var f = 0; f < model.face.length; f++) {
+            var p0 =  model.pos[model.face[f][0]]
+            var p1 =  model.pos[model.face[f][1]]
+            var p2 =  model.pos[model.face[f][2]]
+
+            xl = [p0[0], p1[0], p2[0]]
+            yl = [p0[1], p1[1], p2[1]]
+
+            left = Math.min(...xl)
+            right = Math.max(...xl)
+            up = Math.min(...yl)
+            bottom = Math.max(...yl)
+
+
+            for (var x = left; x < right + 1; x++) {
+                for (var y = up; y < bottom + 1; y++) {
+                    var u = barycentric(p0, p1, p2, [x, y])
+                    if (anyNegative(u)) {
+                        continue
+                    }
+                    drawPoint([x, y])
+                }
+            }
+        }
+    }
+    
+    model.drawTriangle()
 
 </script>
 </body>
