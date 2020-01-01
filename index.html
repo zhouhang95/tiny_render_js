@@ -13,11 +13,22 @@
     <script src="math3d.js"></script>
 </head>
 <body>
-    <canvas id="id-canvas" width="400" height="300"></canvas>
+    <canvas id="id-canvas" width="400" height="400"></canvas>
 <script>
     var log = console.log.bind(console)
     var canvas = document.querySelector('#id-canvas')
     var ctx = canvas.getContext('2d')
+    var genZBuffer = function() {
+        var zBuffer = []
+        for (var i = 0; i < canvas.height; i++) {
+            zBuffer[i] = []
+            for (var j = 0; j < canvas.width; j++) {
+                zBuffer[i][j] = Number.NEGATIVE_INFINITY
+            }
+        }
+        return zBuffer
+    }
+    
 
     var drawPoint = function(p) {
         ctx.fillRect(p[0], p[1], 1, 1)
@@ -65,7 +76,6 @@
         var p = p.slice()
         p[0] = parseInt((p[0] + 1) / 2 * canvas.width)
         p[1] = parseInt((1 - (p[1] + 1) / 2) * canvas.height)
-        log(p)
         return p
     } 
 
@@ -123,12 +133,13 @@
 
 
     model.drawTriangle = function() {
+        var zBuffer = genZBuffer()
         for (var f = 0; f < model.face.length; f++) {
-            var p0 =  model.pos[model.face[f][0]]
-            var p1 =  model.pos[model.face[f][1]]
-            var p2 =  model.pos[model.face[f][2]]
+            var wp0 =  model.pos[model.face[f][0]]
+            var wp1 =  model.pos[model.face[f][1]]
+            var wp2 =  model.pos[model.face[f][2]]
 
-            var n = normalOfTriangle(p0, p1, p2)
+            var n = normalOfTriangle(wp0, wp1, wp2)
             var cosValue = dot(n, [0, 0, 1])
             if (cosValue < 0) {
                 continue
@@ -137,9 +148,9 @@
             // gamma correct
             cosValue = Math.pow(cosValue, 1/2.2)
 
-            var p0 =  convertToScreen(p0)
-            var p1 =  convertToScreen(p1)
-            var p2 =  convertToScreen(p2)
+            var p0 =  convertToScreen(wp0)
+            var p1 =  convertToScreen(wp1)
+            var p2 =  convertToScreen(wp2)
 
             xl = [p0[0], p1[0], p2[0]]
             yl = [p0[1], p1[1], p2[1]]
@@ -148,21 +159,31 @@
             var right = Math.max(...xl)
             var up = Math.min(...yl)
             var bottom = Math.max(...yl)
-            var r = Math.round(255 * cosValue)
-            var g = Math.round(255 * cosValue)
-            var b = Math.round(255 * cosValue)
+            var r = Math.round(180 * cosValue)
+            var g = Math.round(180 * cosValue)
+            var b = Math.round(180 * cosValue)
 
 
             ctx.fillStyle = 'rgb(' + r + ',' + g+ ',' + b + ')'
 
 
             for (var x = left; x < right + 1; x++) {
+                if (x < 0 || x >= canvas.width) {
+                    continue
+                }
                 for (var y = up; y < bottom + 1; y++) {
+                    if (y < 0 || y >= canvas.height) {
+                        continue
+                    }
                     var u = barycentric(p0, p1, p2, [x, y])
                     if (anyNegative(u)) {
                         continue
                     }
-                    drawPoint([x, y])
+                    var z = u[0] * wp0[2] + u[1] * wp1[2] + u[2] * wp2[2]
+                    if (z > zBuffer[x][y]) {
+                        zBuffer[x][y] = z
+                        drawPoint([x, y])
+                    }
                 }
             }
         }
