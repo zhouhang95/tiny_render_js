@@ -10,6 +10,7 @@
             border: 1px black solid;
         }
     </style>
+    <script src="math3d.js"></script>
 </head>
 <body>
     <canvas id="id-canvas" width="400" height="300"></canvas>
@@ -90,14 +91,6 @@
 
     // model.drawWireframe()
 
-    var cross = function(a, b) {
-        var out = []
-        out[0] = a[1] * b[2] - a[2] * b[1]
-        out[1] = a[2] * b[0] - a[0] * b[2]
-        out[2] = a[0] * b[1] - a[1] * b[0]
-        return out
-    }
-
     var barycentric = function(a, b, c, p) {
         ab = [b[0] - a[0], b[1] - a[1]]
         ac = [c[0] - a[0], c[1] - a[1]]
@@ -113,7 +106,16 @@
             var out = [1 - (u[0] + u[1]) / u[2], u[0] / u[2], u[1] / u[2]]
             return out
         }
-    } 
+    }
+    
+    var normalOfTriangle = function(a, b, c) {
+        ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]]
+        ac = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]
+
+        var n = cross(ab, ac)
+        n = normalize(n)
+        return n
+    }
 
     var anyNegative  = function(v) {
         return v[0] < 0 || v[1] < 0 || v[2] < 0
@@ -122,9 +124,16 @@
 
     model.drawTriangle = function() {
         for (var f = 0; f < model.face.length; f++) {
-            var p0 =  convertToScreen(model.pos[model.face[f][0]])
-            var p1 =  convertToScreen(model.pos[model.face[f][1]])
-            var p2 =  convertToScreen(model.pos[model.face[f][2]])
+            var p0 =  model.pos[model.face[f][0]]
+            var p1 =  model.pos[model.face[f][1]]
+            var p2 =  model.pos[model.face[f][2]]
+
+            var n = normalOfTriangle(p0, p1, p2)
+            var cosValue = dot(n, [0, 0, 1])
+
+            var p0 =  convertToScreen(p0)
+            var p1 =  convertToScreen(p1)
+            var p2 =  convertToScreen(p2)
 
             xl = [p0[0], p1[0], p2[0]]
             yl = [p0[1], p1[1], p2[1]]
@@ -133,6 +142,15 @@
             var right = Math.max(...xl)
             var up = Math.min(...yl)
             var bottom = Math.max(...yl)
+            var r = Math.round(255 * cosValue)
+            var g = Math.round(255 * cosValue)
+            var b = Math.round(255 * cosValue)
+
+            if (anyNegative([r, g, b])) {
+                continue
+            }
+
+            ctx.fillStyle = 'rgb(' + r + ',' + g+ ',' + b + ')'
 
 
             for (var x = left; x < right + 1; x++) {
@@ -175,11 +193,10 @@
 
         model.pos = pos
         model.face = face
-        log(pos)
-        log(face)
-        model.drawWireframe()
+
+        // model.drawWireframe()
         // ctx.fillStyle = 'red'
-        // model.drawTriangle()
+        model.drawTriangle()
     }
     xhr.open('GET', 'monkey.obj')
     xhr.send()
