@@ -60,28 +60,35 @@
             }
         }
     }
+    var convertToScreen = function(p) {
+        var p = p.slice()
+        p[0] = parseInt((p[0] + 1) / 2 * canvas.width)
+        p[1] = parseInt((1 - (p[1] + 1) / 2) * canvas.height)
+        log(p)
+        return p
+    } 
 
     var model = {}
     model.pos = [
-        [50, 50],
-        [50, 250],
-        [150, 50],
+        [-0.5, 0.5],
+        [0, 0.5],
+        [-0.5, -0.5],
     ]
     model.face = [
         [0, 1, 2],
     ]
     model.drawWireframe = function() {
         for (var f = 0; f < model.face.length; f++) {
-            var p0 =  model.pos[model.face[f][0]]
-            var p1 =  model.pos[model.face[f][1]]
-            var p2 =  model.pos[model.face[f][2]]
+            var p0 =  convertToScreen(model.pos[model.face[f][0]])
+            var p1 =  convertToScreen(model.pos[model.face[f][1]])
+            var p2 =  convertToScreen(model.pos[model.face[f][2]])
             drawLine(p0, p1, 'red')
             drawLine(p1, p2, 'green')
             drawLine(p2, p0, 'blue')
         }
     }
 
-    model.drawWireframe()
+    // model.drawWireframe()
 
     var cross = function(a, b) {
         var out = []
@@ -115,17 +122,17 @@
 
     model.drawTriangle = function() {
         for (var f = 0; f < model.face.length; f++) {
-            var p0 =  model.pos[model.face[f][0]]
-            var p1 =  model.pos[model.face[f][1]]
-            var p2 =  model.pos[model.face[f][2]]
+            var p0 =  convertToScreen(model.pos[model.face[f][0]])
+            var p1 =  convertToScreen(model.pos[model.face[f][1]])
+            var p2 =  convertToScreen(model.pos[model.face[f][2]])
 
             xl = [p0[0], p1[0], p2[0]]
             yl = [p0[1], p1[1], p2[1]]
 
-            left = Math.min(...xl)
-            right = Math.max(...xl)
-            up = Math.min(...yl)
-            bottom = Math.max(...yl)
+            var left = Math.min(...xl)
+            var right = Math.max(...xl)
+            var up = Math.min(...yl)
+            var bottom = Math.max(...yl)
 
 
             for (var x = left; x < right + 1; x++) {
@@ -140,7 +147,42 @@
         }
     }
     
-    model.drawTriangle()
+    // model.drawTriangle()
+
+    var xhr = new XMLHttpRequest()
+    xhr.onreadystatechange = function() {
+        if (this.readyState != 4) {
+            return
+        }
+        var obj = this.responseText
+        obj = obj.split('\n')
+        pos = []
+        face = []
+        for (var i = 0; i < obj.length; i++) {
+
+            var l = obj[i]
+            if (l.startsWith('v ')) {
+                l = l.split(' ')
+                pos.push([parseFloat(l[1]), parseFloat(l[2]), parseFloat(l[3])])
+            } else if (l.startsWith('f ')) {
+                l = l.split(' ')
+                var p0 = parseInt(l[1].split('/')[0]) - 1
+                var p1 = parseInt(l[2].split('/')[0]) - 1
+                var p2 = parseInt(l[3].split('/')[0]) - 1
+                face.push([p0, p1, p2])
+            }
+        }
+
+        model.pos = pos
+        model.face = face
+        log(pos)
+        log(face)
+        model.drawWireframe()
+        // ctx.fillStyle = 'red'
+        // model.drawTriangle()
+    }
+    xhr.open('GET', 'monkey.obj')
+    xhr.send()
 
 </script>
 </body>
