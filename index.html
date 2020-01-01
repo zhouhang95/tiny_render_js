@@ -130,6 +130,12 @@
 
             var n = normalOfTriangle(p0, p1, p2)
             var cosValue = dot(n, [0, 0, 1])
+            if (cosValue < 0) {
+                continue
+            }
+            
+            // gamma correct
+            cosValue = Math.pow(cosValue, 1/2.2)
 
             var p0 =  convertToScreen(p0)
             var p1 =  convertToScreen(p1)
@@ -146,9 +152,6 @@
             var g = Math.round(255 * cosValue)
             var b = Math.round(255 * cosValue)
 
-            if (anyNegative([r, g, b])) {
-                continue
-            }
 
             ctx.fillStyle = 'rgb(' + r + ',' + g+ ',' + b + ')'
 
