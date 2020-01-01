@@ -15,9 +15,28 @@
 <body>
     <canvas id="id-canvas" width="400" height="400"></canvas>
 <script>
+
     var log = console.log.bind(console)
+    var machine = {}
+    machine.event = []
+    machine.run = function() {
+        machine.event.push(1)
+        if (machine.event.length == 2) {
+            machine.render()
+        }
+    }
+
+    machine.run()
+    // machine.run()
     var canvas = document.querySelector('#id-canvas')
     var ctx = canvas.getContext('2d')
+
+    var tex = new Image()
+    tex.src = 'tex.jpg'
+    tex.onload = function() {
+        machine.run()
+    }
+
     var genZBuffer = function() {
         var zBuffer = []
         for (var i = 0; i < canvas.height; i++) {
@@ -189,7 +208,9 @@
         }
     }
     
-    // model.drawTriangle()
+    machine.render = function() {
+        model.drawTriangle()
+    }
 
     var xhr = new XMLHttpRequest()
     xhr.onreadystatechange = function() {
@@ -220,6 +241,7 @@
 
         // model.drawWireframe()
         // ctx.fillStyle = 'red'
+        machine.run()
         model.drawTriangle()
     }
     xhr.open('GET', 'monkey.obj')
