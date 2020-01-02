@@ -14,6 +14,7 @@
 </head>
 <body>
     <canvas id="id-canvas" width="400" height="400"></canvas>
+    <canvas id="z-canvas" width="400" height="400"></canvas>
 <script>
 
     var log = console.log.bind(console)
@@ -204,6 +205,26 @@
                 }
             }
         }
+        var zCanvas = document.querySelector('#z-canvas')
+        var zCtx = zCanvas.getContext('2d')
+        zCtx.fillStyle = 'Magenta'
+        for (var i = 0; i < canvas.height; i++) {
+            for (var j = 0; j < canvas.width; j++) {
+                if (zBuffer[i][j] == Number.NEGATIVE_INFINITY) {
+                    zCtx.fillStyle = 'Magenta'
+                    zCtx.fillRect(i, j, 1, 1)
+                } else {
+                    var intensity = (zBuffer[i][j] + 1) / 2
+                    intensity = Math.min(1, Math.max(0, intensity))
+                    var r = Math.round(255 * intensity)
+                    var g = Math.round(255 * intensity)
+                    var b = Math.round(255 * intensity)
+                    zCtx.fillStyle = 'rgb(' + r + ',' + g+ ',' + b + ')'
+                    zCtx.fillRect(i, j, 1, 1)
+                }
+            }
+        }
+
     }
     
     machine.render = function() {
