@@ -26,8 +26,6 @@
         }
     }
 
-    machine.run()
-    // machine.run()
     var canvas = document.querySelector('#id-canvas')
     var ctx = canvas.getContext('2d')
 
@@ -242,7 +240,6 @@
         // model.drawWireframe()
         // ctx.fillStyle = 'red'
         machine.run()
-        model.drawTriangle()
     }
     xhr.open('GET', 'monkey.obj')
     xhr.send()
