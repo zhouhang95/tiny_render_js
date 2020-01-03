@@ -187,10 +187,11 @@ var __main__ = function() {
                         continue
                     }
                     zBuffer[x][y] = z
-                    var u = Math.floor(model.uv[model.face[f][0][1]][0] * texCanvas.width)
-                    var v = Math.floor(model.uv[model.face[f][0][1]][1] * texCanvas.height)
-                    var u = model.uv[model.face[f][0][1]][0]
-                    var v = model.uv[model.face[f][0][1]][1]
+                    var uv0 = model.uv[model.face[f][0][1]]
+                    var uv1 = model.uv[model.face[f][1][1]]
+                    var uv2 = model.uv[model.face[f][2][1]]
+                    var u = b[0] * uv0[0] + b[1] * uv1[0] + b[2] * uv2[0]
+                    var v = b[0] * uv0[1] + b[1] * uv1[1] + b[2] * uv2[1]
                     texPixel = pixelArray.pixelUV(u, v)
 
                     var r = Math.round(texPixel[0] * cosValue)
