@@ -117,39 +117,6 @@
         }
     }
 
-    // model.drawWireframe()
-
-    var barycentric = function(a, b, c, p) {
-        ab = [b[0] - a[0], b[1] - a[1]]
-        ac = [c[0] - a[0], c[1] - a[1]]
-        pa = [a[0] - p[0], a[1] - p[1]]
-
-        x = [ab[0], ac[0], pa[0]]
-        y = [ab[1], ac[1], pa[1]]
-
-        u = cross(x, y)
-        if (Math.abs([2]) < 1) {
-            return [-1, 1, 1]
-        } else {
-            var out = [1 - (u[0] + u[1]) / u[2], u[0] / u[2], u[1] / u[2]]
-            return out
-        }
-    }
-    
-    var normalOfTriangle = function(a, b, c) {
-        ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]]
-        ac = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]
-
-        var n = cross(ab, ac)
-        n = normalize(n)
-        return n
-    }
-
-    var anyNegative  = function(v) {
-        return v[0] < 0 || v[1] < 0 || v[2] < 0
-    }
-
-
     model.drawTriangle = function() {
         var zBuffer = genZBuffer()
         for (var f = 0; f < model.face.length; f++) {
@@ -258,8 +225,6 @@
         model.pos = pos
         model.face = face
 
-        // model.drawWireframe()
-        // ctx.fillStyle = 'red'
         machine.run()
     }
     xhr.open('GET', 'monkey.obj')
