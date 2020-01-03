@@ -37,7 +37,7 @@ var __main__ = function() {
     var texCtx = texCanvas.getContext('2d')
     var pixelArray = {}
     pixelArray.pixelXY = function(x, y) {
-        i = x * canvas.width + y
+        i = y * texCanvas.width + x
         var r = pixelArray.data.data[i * 4 + 0]
         var g = pixelArray.data.data[i * 4 + 1]
         var b = pixelArray.data.data[i * 4 + 2]
@@ -189,15 +189,13 @@ var __main__ = function() {
                     zBuffer[x][y] = z
                     var u = Math.floor(model.uv[model.face[f][0][1]][0] * texCanvas.width)
                     var v = Math.floor(model.uv[model.face[f][0][1]][1] * texCanvas.height)
-                    // var u = model.uv[model.face[f][0][1]][0]
-                    // var v = model.uv[model.face[f][0][1]][1]
-                    // texPixel = pixelArray.pixelUV(u, v)
-                    // hot
-                    texPixel = texCtx.getImageData(u, v, 1, 1)
+                    var u = model.uv[model.face[f][0][1]][0]
+                    var v = model.uv[model.face[f][0][1]][1]
+                    texPixel = pixelArray.pixelUV(u, v)
 
-                    var r = Math.round(texPixel.data[0] * cosValue)
-                    var g = Math.round(texPixel.data[1] * cosValue)
-                    var b = Math.round(texPixel.data[2] * cosValue)
+                    var r = Math.round(texPixel[0] * cosValue)
+                    var g = Math.round(texPixel[1] * cosValue)
+                    var b = Math.round(texPixel[2] * cosValue)
                     ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')'
                     drawPoint([x, y])
                 }
