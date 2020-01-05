@@ -19,23 +19,32 @@
 <body>
     <canvas id="id-canvas" width="400" height="400"></canvas>
 <script>
-var __main__ = function() {
-    var engine = {}
-    engine.event = []
-    engine.run = function() {
-        engine.event.push(1)
-        if (engine.event.length == 2) {
-            engine.render()
+var Engine = function() {
+    var o = {
+        event: [],
+        model: undefined,
+    }
+    o.run = function() {
+        o.event.push(1)
+        if (o.event.length == 2) {
+            o.render()
         }
     }
+    o.setModel = function(obj) {
+        o.model = Model()
+        o.model.parseObj(obj)
+    }
+    return o
+}
+var __main__ = function() {
+    var engine = Engine()
 
     var canvas = document.querySelector('#id-canvas')
     var canvasHelper = CanvasHelper(canvas)
-    var model = Model()
     var pixelArray = PixelArray(engine, 'tex.jpg')
 
     engine.render = function() {
-        canvasHelper.drawModel(model, pixelArray)
+        canvasHelper.drawModel(engine.model, pixelArray)
     }
 
     var xhr = new XMLHttpRequest()
@@ -44,7 +53,7 @@ var __main__ = function() {
             return
         }
         var obj = this.responseText
-        model.parseObj(obj)
+        engine.setModel(obj)
         engine.run()
     }
     xhr.open('GET', 'monkey.obj')
