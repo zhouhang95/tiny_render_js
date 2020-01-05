@@ -14,53 +14,27 @@
     <script src="util.js"></script>
     <script src="model.js"></script>
     <script src="canvas_helper.js"></script>
+    <script src="pixel_array.js"></script>
 </head>
 <body>
     <canvas id="id-canvas" width="400" height="400"></canvas>
 <script>
 var __main__ = function() {
-    var machine = {}
-    machine.event = []
-    machine.run = function() {
-        machine.event.push(1)
-        if (machine.event.length == 2) {
-            machine.render()
+    var engine = {}
+    engine.event = []
+    engine.run = function() {
+        engine.event.push(1)
+        if (engine.event.length == 2) {
+            engine.render()
         }
     }
 
     var canvas = document.querySelector('#id-canvas')
     var canvasHelper = CanvasHelper(canvas)
     var model = Model()
+    var pixelArray = PixelArray(engine, 'tex.jpg')
 
-    var tex = imageFromPath('tex.jpg')
-    var texCanvas = document.createElement('canvas')
-    document.body.appendChild(texCanvas)
-    var texCtx = texCanvas.getContext('2d')
-    var pixelArray = {}
-    pixelArray.pixelXY = function(x, y) {
-        i = y * texCanvas.width + x
-        var r = pixelArray.data.data[i * 4 + 0]
-        var g = pixelArray.data.data[i * 4 + 1]
-        var b = pixelArray.data.data[i * 4 + 2]
-        return [r, g, b]
-    }
-
-    pixelArray.pixelUV = function(u, v) {
-        var x = Math.floor(u * texCanvas.width)
-        var y = Math.floor(v * texCanvas.height)
-        return pixelArray.pixelXY(x, y)
-        
-    }
-    tex.onload = function() {
-        texCanvas.width = tex.width
-        texCanvas.height = tex.height
-        texCtx.drawImage(tex, 0, 0, tex.width, tex.height)
-        pixelArray.data = texCtx.getImageData(0, 0, tex.width, tex.height)
-        machine.run()
-    }
-
-    
-    machine.render = function() {
+    engine.render = function() {
         canvasHelper.drawModel(model, pixelArray)
     }
 
@@ -71,7 +45,7 @@ var __main__ = function() {
         }
         var obj = this.responseText
         model.parseObj(obj)
-        machine.run()
+        engine.run()
     }
     xhr.open('GET', 'monkey.obj')
     xhr.send()
