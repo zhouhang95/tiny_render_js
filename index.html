@@ -10,54 +10,19 @@
             border: 1px black solid;
         }
     </style>
-    <script src="math3d.js"></script>
-    <script src="util.js"></script>
-    <script src="model.js"></script>
-    <script src="canvas_helper.js"></script>
-    <script src="pixel_array.js"></script>
+    <script src="src/math3d.js"></script>
+    <script src="src/util.js"></script>
+    <script src="src/model.js"></script>
+    <script src="src/canvas_helper.js"></script>
+    <script src="src/pixel_array.js"></script>
+    <script src="src/engine.js"></script>
 </head>
 <body>
     <canvas id="id-canvas" width="400" height="400"></canvas>
 <script>
-var Engine = function() {
-    var o = {
-        event: [],
-        model: undefined,
-    }
-    o.run = function() {
-        o.event.push(1)
-        if (o.event.length == 2) {
-            o.render()
-        }
-    }
-    o.setModel = function(obj) {
-        o.model = Model()
-        o.model.parseObj(obj)
-    }
-    return o
-}
 var __main__ = function() {
     var engine = Engine()
-
-    var canvas = document.querySelector('#id-canvas')
-    var canvasHelper = CanvasHelper(canvas)
-    var pixelArray = PixelArray(engine, 'tex.jpg')
-
-    engine.render = function() {
-        canvasHelper.drawModel(engine.model, pixelArray)
-    }
-
-    var xhr = new XMLHttpRequest()
-    xhr.onreadystatechange = function() {
-        if (this.readyState != 4) {
-            return
-        }
-        var obj = this.responseText
-        engine.setModel(obj)
-        engine.run()
-    }
-    xhr.open('GET', 'monkey.obj')
-    xhr.send()
+    engine.run()
 }
 __main__()
 </script>

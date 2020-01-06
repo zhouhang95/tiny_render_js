@@ -13,7 +13,7 @@ var PixelArray = function(engine, texPath) {
         texCanvas.height = o.texImage.height
         o.texCtx.drawImage(o.texImage, 0, 0, o.texImage.width, o.texImage.height)
         o.data = o.texCtx.getImageData(0, 0, o.texImage.width, o.texImage.height)
-        engine.run()
+        engine.prepared()
     }
     o.pixelXY = function(x, y) {
         i = y * o.texCanvas.width + x
