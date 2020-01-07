@@ -5,6 +5,10 @@ var CanvasHelper = function(canvas) {
     }
     o.convertToScreen = function(p) {
         var p = p.slice()
+        p.push(1)
+        var perspectiveMatrix = simplePerspective(3)
+        p = matVecMul(perspectiveMatrix, p)
+        p = toVec3(p)
         p[0] = parseInt((p[0] + 1) / 2 * o.canvas.width)
         p[1] = parseInt((1 - (p[1] + 1) / 2) * o.canvas.height)
         return p

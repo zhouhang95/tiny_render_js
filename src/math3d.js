@@ -7,6 +7,27 @@ var vec3Mul = function(vec3, scale) {
 
 }
 
+var toVec4Point = function(a) {
+    var out = a.slice()
+    out.push(1)
+    return out
+}
+
+var toVec4Dir = function(a) {
+    var out = a.slice()
+    out.push(0)
+    return out
+}
+
+var toVec3 = function(a) {
+    if (a[3] == 0) {
+        return a.slice(0, 3)
+    } else {
+        var out = a.slice(0, 3)
+        return vecMul(out, 1/a[3])
+    }
+}
+
 var mat4Identity = [
     [1, 0, 0, 0],
     [0, 1, 0, 0],
@@ -30,6 +51,14 @@ var vecSub = function(a, b) {
     return out
 }
 
+var vecMul = function(a, b) {
+    var out = []
+    for (var i = 0; i < a.length; i++) {
+        out[i] = a[i] * b
+    }
+    return out
+}
+
 var cross = function(a, b) {
     var out = []
     out[0] = a[1] * b[2] - a[2] * b[1]
@@ -44,6 +73,17 @@ var dot = function(a, b) {
         out += a[i] * b[i]
     }
     return out 
+}
+
+var matVecMul = function(mat, vec) {
+    var l = mat
+    var r = vec
+    var out = []
+    out[0] = l[0][0] * r[0] + l[0][1] * r[1] + l[0][2] * r[2] + l[0][3] * r[3]
+    out[1] = l[1][0] * r[0] + l[1][1] * r[1] + l[1][2] * r[2] + l[1][3] * r[3]
+    out[2] = l[2][0] * r[0] + l[2][1] * r[1] + l[2][2] * r[2] + l[2][3] * r[3]
+    out[3] = l[3][0] * r[0] + l[3][1] * r[1] + l[3][2] * r[2] + l[3][3] * r[3]
+    return out
 }
 
 var matMul = function(mat4l, mat4r) {
@@ -182,6 +222,12 @@ var orthographic = function(height) {
 
 var perspective = function(height, fov) {
     
+}
+
+var simplePerspective = function(c) {
+    var out = clone(mat4Identity)
+    out[3][2] = -1 / c
+    return out
 }
 
 var lookat = function(pos, target) {
