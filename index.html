@@ -18,11 +18,16 @@
     <script src="src/engine.js"></script>
 </head>
 <body>
-    <canvas id="id-canvas" width="400" height="400"></canvas>
+    <canvas id="id-canvas" width="600" height="600"></canvas>
 <script>
 var __main__ = function() {
     var engine = Engine()
     engine.run()
+    window.addEventListener('keydown', function(event) {
+        if (event.key == 'z') {
+            engine.drawZBuffer()
+        }
+    })
 }
 __main__()
 </script>

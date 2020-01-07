@@ -2,6 +2,7 @@ var CanvasHelper = function(canvas) {
     var o = {
         canvas: canvas,
         ctx: canvas.getContext('2d'),
+        zBuffer: null,
     }
     o.convertToScreen = function(p) {
         var p = p.slice()
@@ -65,7 +66,7 @@ var CanvasHelper = function(canvas) {
         }
     }
     o.drawModel = function(model, texPixelArray) {
-        var zBuffer = o.genZBuffer()
+        o.zBuffer = o.genZBuffer()
         for (var f = 0; f < model.face.length; f++) {
             var p0 =  model.vertex[model.face[f][0]]
             var p1 =  model.vertex[model.face[f][1]]
@@ -105,10 +106,10 @@ var CanvasHelper = function(canvas) {
                         continue
                     }
                     var z = b[0] * p0.pos[2] + b[1] * p1.pos[2] + b[2] * p2.pos[2]
-                    if (z <= zBuffer[x][y]) {
+                    if (z <= o.zBuffer[x][y]) {
                         continue
                     }
-                    zBuffer[x][y] = z
+                    o.zBuffer[x][y] = z
                     var u = b[0] * p0.uv[0] + b[1] * p1.uv[0] + b[2] * p2.uv[0]
                     var v = b[0] * p0.uv[1] + b[1] * p1.uv[1] + b[2] * p2.uv[1]
                     texPixel = texPixelArray.pixelUV(u, v)
@@ -119,6 +120,23 @@ var CanvasHelper = function(canvas) {
                     o.ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')'
                     o.drawPoint([x, y])
                 }
+            }
+        }
+    }
+    o.drawZBuffer = function() {
+        for (var i = 0; i < o.canvas.height; i++) {
+            for (var j = 0; j < o.canvas.width; j++) {
+                if (o.zBuffer[i][j] == Number.NEGATIVE_INFINITY) {
+                    o.ctx.fillStyle = 'Magenta'
+                } else {
+                    var intensity = (o.zBuffer[i][j] + 1) / 2
+                    intensity = Math.min(1, Math.max(0, intensity))
+                    var r = Math.round(255 * intensity)
+                    var g = Math.round(255 * intensity)
+                    var b = Math.round(255 * intensity)
+                    o.ctx.fillStyle = 'rgb(' + r + ',' + g+ ',' + b + ')'
+                }
+                o.drawPoint([i, j])
             }
         }
     }

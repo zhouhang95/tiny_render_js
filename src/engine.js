@@ -19,6 +19,7 @@ var Engine = function() {
     }
     o.render = function() {
         o.canvasHelper.drawModel(o.model, o.pixelArray)
+        // o.canvasHelper.drawZBuffer()
     }
     o.run = function() {
         o.pixelArray = PixelArray(o, 'res/tex.jpg')
@@ -27,6 +28,9 @@ var Engine = function() {
             o.setModel(obj)
             o.prepared()
         })
+    }
+    o.drawZBuffer = function() {
+        o.canvasHelper.drawZBuffer()
     }
     return o
 }
