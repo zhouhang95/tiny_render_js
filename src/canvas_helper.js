@@ -3,6 +3,7 @@ var CanvasHelper = function(canvas) {
         canvas: canvas,
         ctx: canvas.getContext('2d'),
         zBuffer: null,
+        fBuffer: null,
     }
     o.convertToScreen = function(p) {
         var p = p.slice()
@@ -25,6 +26,18 @@ var CanvasHelper = function(canvas) {
         }
         return zBuffer
     }
+
+    o.genFBuffer = function() {
+        var fBuffer = []
+        for (var i = 0; i < o.canvas.height; i++) {
+            fBuffer[i] = []
+            for (var j = 0; j < o.canvas.width; j++) {
+                fBuffer[i][j] = -1
+            }
+        }
+        return fBuffer
+    }
+
     o.drawPoint = function(p) {
         o.ctx.fillRect(p[0], p[1], 1, 1)
     }
@@ -67,6 +80,7 @@ var CanvasHelper = function(canvas) {
     }
     o.drawModel = function(model, texPixelArray) {
         o.zBuffer = o.genZBuffer()
+        o.fBuffer = o.genFBuffer()
         for (var f = 0; f < model.face.length; f++) {
             var p0 =  model.vertex[model.face[f][0]]
             var p1 =  model.vertex[model.face[f][1]]
@@ -110,6 +124,7 @@ var CanvasHelper = function(canvas) {
                         continue
                     }
                     o.zBuffer[x][y] = z
+                    o.fBuffer[x][y] = f
                     var u = b[0] * p0.uv[0] + b[1] * p1.uv[0] + b[2] * p2.uv[0]
                     var v = b[0] * p0.uv[1] + b[1] * p1.uv[1] + b[2] * p2.uv[1]
                     texPixel = texPixelArray.pixelUV(u, v)

@@ -7,6 +7,34 @@ var Engine = function() {
         canvasHelper: canvasHelper,
         pixelArray: undefined,
     }
+    //------------
+    window.addEventListener('keydown', function(event) {
+        if (event.key == 'z') {
+            o.drawZBuffer()
+        }
+    })
+
+    //------------
+    canvas.addEventListener('mousedown', function(event) {
+        var x = event.layerX - 9
+        var y = event.layerY - 9
+        var zValue =  canvasHelper.zBuffer[x][y]
+        var face =  canvasHelper.fBuffer[x][y]
+        var p = o.model.face[face]
+        var p0 = o.model.vertex[p[0]]
+        var p1 = o.model.vertex[p[1]]
+        var p2 = o.model.vertex[p[2]]
+
+        var result = {
+            zValue: zValue,
+            face: face,
+            p0: p0,
+            p1: p1,
+            p2: p2,
+        }
+        log(result)
+    })
+
     o.prepared = function() {
         o.event.push(1)
         if (o.event.length == 2) {
