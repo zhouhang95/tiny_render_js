@@ -262,7 +262,7 @@ var barycentric = function(a, b, c, p) {
     y = [ab[1], ac[1], pa[1]]
 
     u = cross(x, y)
-    if (Math.abs([2]) < 1) {
+    if (Math.abs(u[2]) < 1) {
         return [-1, 1, 1]
     } else {
         var out = [1 - (u[0] + u[1]) / u[2], u[0] / u[2], u[1] / u[2]]
