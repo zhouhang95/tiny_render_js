@@ -13,22 +13,18 @@ var CanvasHelper = function(canvas) {
     }
 
     o.genZBuffer = function() {
-        var zBuffer = []
-        for (var i = 0; i < o.canvas.height; i++) {
-            zBuffer[i] = []
-            for (var j = 0; j < o.canvas.width; j++) {
-                zBuffer[i][j] = Number.NEGATIVE_INFINITY
-            }
-        }
-        return zBuffer
+        return o.genBuffer(Number.NEGATIVE_INFINITY)
     }
 
     o.genFBuffer = function() {
+        return o.genBuffer(-1)
+    }
+    o.genBuffer = function(num) {
         var fBuffer = []
         for (var i = 0; i < o.canvas.height; i++) {
             fBuffer[i] = []
             for (var j = 0; j < o.canvas.width; j++) {
-                fBuffer[i][j] = -1
+                fBuffer[i][j] = num
             }
         }
         return fBuffer
