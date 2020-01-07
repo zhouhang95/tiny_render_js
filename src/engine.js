@@ -20,6 +20,9 @@ var Engine = function() {
         var y = event.layerY - 9
         var zValue =  canvasHelper.zBuffer[x][y]
         var face =  canvasHelper.fBuffer[x][y]
+        if (face == -1) {
+            return
+        }
         var p = o.model.face[face]
         var p0 = o.model.vertex[p[0]]
         var p1 = o.model.vertex[p[1]]

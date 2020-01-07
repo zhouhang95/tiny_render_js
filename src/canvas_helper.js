@@ -7,10 +7,6 @@ var CanvasHelper = function(canvas) {
     }
     o.convertToScreen = function(p) {
         var p = p.slice()
-        p.push(1)
-        var perspectiveMatrix = simplePerspective(3)
-        p = matVecMul(perspectiveMatrix, p)
-        p = toVec3(p)
         p[0] = parseInt((p[0] + 1) / 2 * o.canvas.width)
         p[1] = parseInt((1 - (p[1] + 1) / 2) * o.canvas.height)
         return p
@@ -79,14 +75,18 @@ var CanvasHelper = function(canvas) {
         }
     }
     o.drawModel = function(model, texPixelArray) {
+        var perspectiveMatrix = simplePerspective(3)
         o.zBuffer = o.genZBuffer()
         o.fBuffer = o.genFBuffer()
         for (var f = 0; f < model.face.length; f++) {
             var p0 =  model.vertex[model.face[f][0]]
             var p1 =  model.vertex[model.face[f][1]]
             var p2 =  model.vertex[model.face[f][2]]
+            var p0pos = toVec3(matVecMul(perspectiveMatrix, toVec4Point(p0.pos)))
+            var p1pos = toVec3(matVecMul(perspectiveMatrix, toVec4Point(p1.pos)))
+            var p2pos = toVec3(matVecMul(perspectiveMatrix, toVec4Point(p2.pos)))
 
-            var n = normalOfTriangle(p0.pos, p1.pos, p2.pos)
+            var n = normalOfTriangle(p0pos, p1pos, p2pos)
             var cosValue = dot(n, [0, 0, 1])
             if (cosValue < 0) {
                 continue
@@ -95,9 +95,9 @@ var CanvasHelper = function(canvas) {
             // gamma correct
             cosValue = Math.pow(cosValue, 1/2.2)
 
-            var sp0 =  o.convertToScreen(p0.pos)
-            var sp1 =  o.convertToScreen(p1.pos)
-            var sp2 =  o.convertToScreen(p2.pos)
+            var sp0 =  o.convertToScreen(p0pos)
+            var sp1 =  o.convertToScreen(p1pos)
+            var sp2 =  o.convertToScreen(p2pos)
 
             xl = [sp0[0], sp1[0], sp2[0]]
             yl = [sp0[1], sp1[1], sp2[1]]
@@ -119,7 +119,7 @@ var CanvasHelper = function(canvas) {
                     if (anyNegative(b)) {
                         continue
                     }
-                    var z = b[0] * p0.pos[2] + b[1] * p1.pos[2] + b[2] * p2.pos[2]
+                    var z = b[0] * p0pos[2] + b[1] * p1pos[2] + b[2] * p2pos[2]
                     if (z <= o.zBuffer[x][y]) {
                         continue
                     }
