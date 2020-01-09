@@ -38,6 +38,12 @@ var Engine = function() {
         }
         log(result)
     })
+    //------------
+    document.querySelector('#id-r').addEventListener('change', function(event) {
+        var input = event.target
+        log(input.value)
+
+    })
 
     o.prepared = function() {
         o.event.push(1)
