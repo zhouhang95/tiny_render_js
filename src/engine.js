@@ -46,6 +46,11 @@ var Engine = function() {
         o.render()
     })
 
+    document.querySelector('#id-use-fov').addEventListener('change', function(event) {
+        o.camera.useFov = event.target.checked
+        o.render()
+    })
+
     o.prepared = function() {
         o.event.push(1)
         if (o.event.length == 2) {
