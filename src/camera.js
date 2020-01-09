@@ -10,9 +10,9 @@ var Camera = function() {
             var cscValue = 1 / Math.sin(degreeToRadian(o.fov/2))
             return simplePerspective(cscValue)
         } else {
-            return simplePerspective(3)
+            var len = norm(vecSub(o.pos, o.target))
+            return simplePerspective(len)
         }
     }
-
     return o
 }
