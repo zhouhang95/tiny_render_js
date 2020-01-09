@@ -1,4 +1,4 @@
-var CanvasHelper = function(canvas) {
+var HangGL = function(canvas) {
     var o = {
         canvas: canvas,
         ctx: canvas.getContext('2d'),

@@ -1,10 +1,10 @@
 var Engine = function() {
     var canvas = document.querySelector('#id-canvas')
-    var canvasHelper = CanvasHelper(canvas)
+    var hangGL = HangGL(canvas)
     var o = {
         event: [],
         model: undefined,
-        canvasHelper: canvasHelper,
+        hangGL: hangGL,
         pixelArray: undefined,
         camera: Camera(),
     }
@@ -19,8 +19,8 @@ var Engine = function() {
     canvas.addEventListener('mousedown', function(event) {
         var x = event.layerX - 9
         var y = event.layerY - 9
-        var zValue =  canvasHelper.zBuffer[x][y]
-        var face =  canvasHelper.fBuffer[x][y]
+        var zValue =  hangGL.zBuffer[x][y]
+        var face =  hangGL.fBuffer[x][y]
         if (face == -1) {
             return
         }
@@ -62,8 +62,8 @@ var Engine = function() {
         o.model.parseObj(obj)
     }
     o.render = function() {
-        o.canvasHelper.clear()
-        o.canvasHelper.drawModel(o.model, o.pixelArray, o.camera)
+        o.hangGL.clear()
+        o.hangGL.drawModel(o.model, o.pixelArray, o.camera)
     }
     o.run = function() {
         o.pixelArray = PixelArray(o, 'res/tex.jpg')
@@ -74,7 +74,7 @@ var Engine = function() {
         })
     }
     o.drawZBuffer = function() {
-        o.canvasHelper.drawZBuffer()
+        o.hangGL.drawZBuffer()
     }
     return o
 }
