@@ -5,6 +5,9 @@ var CanvasHelper = function(canvas) {
         zBuffer: null,
         fBuffer: null,
     }
+    o.clear = function() {
+        o.ctx.clearRect(0, 0, o.canvas.width, o.canvas.height)
+    }
     o.convertToScreen = function(p) {
         var p = p.slice()
         p[0] = parseInt((p[0] + 1) / 2 * o.canvas.width)

@@ -39,10 +39,11 @@ var Engine = function() {
         log(result)
     })
     //------------
-    document.querySelector('#id-r').addEventListener('change', function(event) {
+    document.querySelector('#id-fov').addEventListener('change', function(event) {
         var input = event.target
-        log(input.value)
-
+        var fov = parseInt(input.value)
+        o.camera.fov = fov
+        o.render()
     })
 
     o.prepared = function() {
@@ -56,6 +57,7 @@ var Engine = function() {
         o.model.parseObj(obj)
     }
     o.render = function() {
+        o.canvasHelper.clear()
         o.canvasHelper.drawModel(o.model, o.pixelArray, o.camera)
     }
     o.run = function() {
