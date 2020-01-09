@@ -238,19 +238,30 @@ var lookat = function(pos, target) {
     r = normalize(r)
     var u = cross(d, r)
     u = normalize(u)
-    var ml = [
-        [r[0], r[1], r[2], 0],
-        [u[0], u[1], u[2], 0],
-        [d[0], d[1], d[2], 0],
+    var out = [
+        [r[0], r[1], r[2], -pos[0]],
+        [u[0], u[1], u[2], -pos[1]],
+        [d[0], d[1], d[2], -pos[2]],
         [0, 0, 0, 1],
     ]
-    var mr = [
-        [1, 0, 0, -pos[0]],
-        [0, 1, 0, -pos[0]],
-        [0, 0, 1, -pos[0]],
+    return out
+}
+
+var lookatTargetView = function(pos, target) {
+    var world_up = [0, 1, 0]
+    var d = vecSub(pos, target)
+    d = normalize(d)
+    var r = cross(world_up, d)
+    r = normalize(r)
+    var u = cross(d, r)
+    u = normalize(u)
+    var out = [
+        [r[0], r[1], r[2], -target[0]],
+        [u[0], u[1], u[2], -target[1]],
+        [d[0], d[1], d[2], -target[2]],
         [0, 0, 0, 1],
     ]
-    return matMul(ml, mr)
+    return out
 }
 
 var barycentric = function(a, b, c, p) {

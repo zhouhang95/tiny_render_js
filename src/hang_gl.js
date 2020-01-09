@@ -74,16 +74,18 @@ var HangGL = function(canvas) {
         }
     }
     o.drawModel = function(model, texPixelArray, camera) {
-        var perspectiveMatrix = camera.perspective()
+        var vm = camera.view()
+        var pm = camera.perspective()
+        var pvm = matMul(pm, vm)
         o.zBuffer = o.genZBuffer()
         o.fBuffer = o.genFBuffer()
         for (var f = 0; f < model.face.length; f++) {
             var p0 =  model.vertex[model.face[f][0]]
             var p1 =  model.vertex[model.face[f][1]]
             var p2 =  model.vertex[model.face[f][2]]
-            var p0pos = toVec3(matVecMul(perspectiveMatrix, toVec4Point(p0.pos)))
-            var p1pos = toVec3(matVecMul(perspectiveMatrix, toVec4Point(p1.pos)))
-            var p2pos = toVec3(matVecMul(perspectiveMatrix, toVec4Point(p2.pos)))
+            var p0pos = toVec3(matVecMul(pvm, toVec4Point(p0.pos)))
+            var p1pos = toVec3(matVecMul(pvm, toVec4Point(p1.pos)))
+            var p2pos = toVec3(matVecMul(pvm, toVec4Point(p2.pos)))
 
             var n = normalOfTriangle(p0pos, p1pos, p2pos)
             var cosValue = dot(n, [0, 0, 1])

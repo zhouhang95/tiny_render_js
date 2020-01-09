@@ -14,5 +14,14 @@ var Camera = function() {
             return simplePerspective(len)
         }
     }
+    o.view = function() {
+        var view = null
+        if (o.useFov) {
+            view = lookat(o.pos, o.target)
+        } else {
+            view = lookatTargetView(o.pos, o.target)
+        }
+        return view
+    }
     return o
 }
