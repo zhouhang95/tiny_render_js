@@ -46,6 +46,27 @@ var Engine = function() {
         o.render()
     })
 
+    document.querySelector('#id-camera-x').addEventListener('change', function(event) {
+        var input = event.target
+        var x = parseFloat(input.value)
+        o.camera.pos[0] = x
+        o.render()
+    })
+
+    document.querySelector('#id-camera-y').addEventListener('change', function(event) {
+        var input = event.target
+        var y = parseFloat(input.value)
+        o.camera.pos[1] = y
+        o.render()
+    })
+
+    document.querySelector('#id-camera-z').addEventListener('change', function(event) {
+        var input = event.target
+        var z = parseFloat(input.value)
+        o.camera.pos[2] = z
+        o.render()
+    })
+
     document.querySelector('#id-use-fov').addEventListener('change', function(event) {
         o.camera.useFov = event.target.checked
         o.render()
