@@ -41,7 +41,7 @@ var Engine = function() {
     //------------
     document.querySelector('#id-fov').addEventListener('change', function(event) {
         var input = event.target
-        var fov = parseInt(input.value)
+        var fov = parseFloat(input.value)
         o.camera.fov = fov
         o.render()
     })
