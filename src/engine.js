@@ -6,6 +6,7 @@ var Engine = function() {
         model: undefined,
         canvasHelper: canvasHelper,
         pixelArray: undefined,
+        camera: Camera(),
     }
     //------------
     window.addEventListener('keydown', function(event) {
@@ -49,8 +50,7 @@ var Engine = function() {
         o.model.parseObj(obj)
     }
     o.render = function() {
-        o.canvasHelper.drawModel(o.model, o.pixelArray)
-        // o.canvasHelper.drawZBuffer()
+        o.canvasHelper.drawModel(o.model, o.pixelArray, o.camera)
     }
     o.run = function() {
         o.pixelArray = PixelArray(o, 'res/tex.jpg')

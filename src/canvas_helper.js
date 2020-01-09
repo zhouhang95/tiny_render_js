@@ -70,8 +70,8 @@ var CanvasHelper = function(canvas) {
             }
         }
     }
-    o.drawModel = function(model, texPixelArray) {
-        var perspectiveMatrix = simplePerspective(3)
+    o.drawModel = function(model, texPixelArray, camera) {
+        var perspectiveMatrix = camera.perspective()
         o.zBuffer = o.genZBuffer()
         o.fBuffer = o.genFBuffer()
         for (var f = 0; f < model.face.length; f++) {

@@ -1,4 +1,4 @@
-var Cameara = function() {
+var Camera = function() {
     var o = {
         phi: 0,
         theta: 90,
@@ -11,6 +11,9 @@ var Cameara = function() {
         y = r * Math.sin(phi) * Math.sin(theta)
         z = r * Math.cos(theta)
         return [x, z, -y]
+    }
+    o.perspective = function() {
+        return simplePerspective(o.r)
     }
 
     return o
