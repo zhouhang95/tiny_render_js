@@ -73,6 +73,62 @@ var HangGL = function(canvas) {
             }
         }
     }
+    o.drawTriangle = function(p0, p1, p2, faceIndex, texPixelArray, pvm) {
+        var p0pos = toVec3(matVecMul(pvm, toVec4Point(p0.pos)))
+        var p1pos = toVec3(matVecMul(pvm, toVec4Point(p1.pos)))
+        var p2pos = toVec3(matVecMul(pvm, toVec4Point(p2.pos)))
+
+        var n = normalOfTriangle(p0pos, p1pos, p2pos)
+        var cosValue = dot(n, [0, 0, 1])
+        if (cosValue < 0) {
+            return
+        }
+        
+        // gamma correct
+        cosValue = Math.pow(cosValue, 1/2.2)
+
+        var sp0 =  o.convertToScreen(p0pos)
+        var sp1 =  o.convertToScreen(p1pos)
+        var sp2 =  o.convertToScreen(p2pos)
+
+        xl = [sp0[0], sp1[0], sp2[0]]
+        yl = [sp0[1], sp1[1], sp2[1]]
+
+        var left = Math.min(...xl)
+        var right = Math.max(...xl)
+        var up = Math.min(...yl)
+        var bottom = Math.max(...yl)
+
+        for (var x = left; x < right + 1; x++) {
+            if (x < 0 || x >= o.canvas.width) {
+                continue
+            }
+            for (var y = up; y < bottom + 1; y++) {
+                if (y < 0 || y >= o.canvas.height) {
+                    continue
+                }
+                var b = barycentric(sp0, sp1, sp2, [x, y])
+                if (anyNegative(b)) {
+                    continue
+                }
+                var z = b[0] * p0pos[2] + b[1] * p1pos[2] + b[2] * p2pos[2]
+                if (z <= o.zBuffer[x][y]) {
+                    continue
+                }
+                o.zBuffer[x][y] = z
+                o.fBuffer[x][y] = faceIndex
+                var u = b[0] * p0.uv[0] + b[1] * p1.uv[0] + b[2] * p2.uv[0]
+                var v = b[0] * p0.uv[1] + b[1] * p1.uv[1] + b[2] * p2.uv[1]
+                texPixel = texPixelArray.pixelUV(u, v)
+
+                var r = Math.round(texPixel[0] * cosValue)
+                var g = Math.round(texPixel[1] * cosValue)
+                var b = Math.round(texPixel[2] * cosValue)
+                o.ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')'
+                o.drawPoint([x, y])
+            }
+        }
+    }
     o.drawModel = function(model, texPixelArray, camera) {
         var vm = camera.view()
         var pm = camera.perspective()
@@ -83,60 +139,7 @@ var HangGL = function(canvas) {
             var p0 =  model.vertex[model.face[f][0]]
             var p1 =  model.vertex[model.face[f][1]]
             var p2 =  model.vertex[model.face[f][2]]
-            var p0pos = toVec3(matVecMul(pvm, toVec4Point(p0.pos)))
-            var p1pos = toVec3(matVecMul(pvm, toVec4Point(p1.pos)))
-            var p2pos = toVec3(matVecMul(pvm, toVec4Point(p2.pos)))
-
-            var n = normalOfTriangle(p0pos, p1pos, p2pos)
-            var cosValue = dot(n, [0, 0, 1])
-            if (cosValue < 0) {
-                continue
-            }
-            
-            // gamma correct
-            cosValue = Math.pow(cosValue, 1/2.2)
-
-            var sp0 =  o.convertToScreen(p0pos)
-            var sp1 =  o.convertToScreen(p1pos)
-            var sp2 =  o.convertToScreen(p2pos)
-
-            xl = [sp0[0], sp1[0], sp2[0]]
-            yl = [sp0[1], sp1[1], sp2[1]]
-
-            var left = Math.min(...xl)
-            var right = Math.max(...xl)
-            var up = Math.min(...yl)
-            var bottom = Math.max(...yl)
-
-            for (var x = left; x < right + 1; x++) {
-                if (x < 0 || x >= o.canvas.width) {
-                    continue
-                }
-                for (var y = up; y < bottom + 1; y++) {
-                    if (y < 0 || y >= o.canvas.height) {
-                        continue
-                    }
-                    var b = barycentric(sp0, sp1, sp2, [x, y])
-                    if (anyNegative(b)) {
-                        continue
-                    }
-                    var z = b[0] * p0pos[2] + b[1] * p1pos[2] + b[2] * p2pos[2]
-                    if (z <= o.zBuffer[x][y]) {
-                        continue
-                    }
-                    o.zBuffer[x][y] = z
-                    o.fBuffer[x][y] = f
-                    var u = b[0] * p0.uv[0] + b[1] * p1.uv[0] + b[2] * p2.uv[0]
-                    var v = b[0] * p0.uv[1] + b[1] * p1.uv[1] + b[2] * p2.uv[1]
-                    texPixel = texPixelArray.pixelUV(u, v)
-
-                    var r = Math.round(texPixel[0] * cosValue)
-                    var g = Math.round(texPixel[1] * cosValue)
-                    var b = Math.round(texPixel[2] * cosValue)
-                    o.ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')'
-                    o.drawPoint([x, y])
-                }
-            }
+            o.drawTriangle(p0, p1, p2, f, texPixelArray, pvm)
         }
     }
     o.drawZBuffer = function() {
