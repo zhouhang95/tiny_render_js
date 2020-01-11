@@ -84,6 +84,9 @@ var Engine = function() {
     }
     o.render = function() {
         o.hangGL.clear()
+        o.drawModel()
+    }
+    o.drawModel = function() {
         o.hangGL.drawModel(o.model, o.pixelArray, o.camera)
     }
     o.run = function() {
